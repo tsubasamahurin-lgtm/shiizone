@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>王艺师 · AI Product Manager</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Noto+Serif+SC:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #ece8df; }
+    @media (prefers-color-scheme: dark) { html, body { background: #0a0a0a; } }
+    body { font-family: "Space Grotesk", "Inter", "Noto Sans SC", -apple-system, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    button { font: inherit; }
+    /* Tiny scrollbar inside the chat panel only */
+    .fusion-chat-scroll::-webkit-scrollbar { width: 6px; }
+    .fusion-chat-scroll::-webkit-scrollbar-thumb { background: rgba(127,127,127,0.4); }
+
+    /* Element hover responses (cursor-effects.html 04) */
+
+    /* For stacked list rows (home project list, articles): subtle shift + name red */
+    .hover-row { transition: padding-left .18s, padding-right .18s, background .18s, color .15s; }
+    .hover-row:hover { padding-left: 12px !important; background: rgba(10,10,10,0.04); }
+    .hover-row:hover .hover-name { color: #dd2a1f; }
+    @media (prefers-color-scheme: dark) {
+      .hover-row:hover { background: rgba(236,232,223,0.06); }
+    }
+
+    /* For standalone cards (prev/next nav): lift + hard shadow + name red */
+    .hover-lift { transition: transform .18s, box-shadow .18s, background .18s; }
+    .hover-lift:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 #0a0a0a; z-index: 2; }
+    .hover-lift:hover .hover-name { color: #dd2a1f; }
+    @media (prefers-color-scheme: dark) { .hover-lift:hover { box-shadow: 4px 4px 0 #ece8df; } }
+
+    /* Portrait / image rotate on hover */
+    .hover-photo { transition: transform .28s cubic-bezier(.34,1.56,.64,1); }
+    .hover-photo:hover { transform: rotate(-4deg) scale(1.1); }
+
+    /* Link underline sweep + color */
+    .hover-link { position: relative; }
+    .hover-link::after {
+      content: ''; position: absolute; left: 0; bottom: -3px;
+      width: 0; height: 1.5px; background: #dd2a1f; transition: width .22s ease-out;
+    }
+    .hover-link:hover::after { width: 100%; }
+    .hover-link:hover { color: #dd2a1f !important; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="directions/shared.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="fusion/theme.jsx"></script>
+  <script type="text/babel" src="fusion/chat.jsx"></script>
+  <script type="text/babel" src="fusion/home.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "theme": "system"
+    }/*EDITMODE-END*/;
+
+    function App() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      const mode = useSystemColorScheme(t.theme);
+
+      return (
+        <>
+          <FusionHome
+            themePref={t.theme}
+            onSetThemePref={(v) => setTweak('theme', v)}
+          />
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="主题">
+              <TweakRadio
+                label="模式"
+                value={t.theme}
+                options={[
+                  { value: 'system', label: '跟随系统' },
+                  { value: 'light',  label: '浅色' },
+                  { value: 'dark',   label: '深色' },
+                ]}
+                onChange={(v) => setTweak('theme', v)}
+              />
+              <div style={{ fontSize: 11, color: 'rgba(41,38,27,.55)', lineHeight: 1.5, marginTop: -4 }}>
+                当前生效：<strong>{mode === 'dark' ? '深色' : '浅色'}</strong>
+                {t.theme === 'system' && <span>（{mode === 'dark' ? '你系统在深色' : '你系统在浅色'}）</span>}
+              </div>
+            </TweakSection>
+
+            <TweakSection label="嵌入">
+              <div style={{ fontSize: 11, color: 'rgba(41,38,27,.65)', lineHeight: 1.6 }}>
+                Chat 面板可以独立嵌入到任何网页：<br />
+                <code style={{ display: 'block', marginTop: 6, padding: '6px 8px', background: 'rgba(0,0,0,0.06)', borderRadius: 4, fontFamily: 'monospace', fontSize: 10.5, wordBreak: 'break-all' }}>
+                  &lt;iframe src="chat-embed.html"<br />
+                  &nbsp;&nbsp;width="100%" height="640"&gt;<br />
+                  &lt;/iframe&gt;
+                </code>
+                <a href="chat-embed.html" target="_blank" style={{ display: 'inline-block', marginTop: 8, fontSize: 11, color: '#dd2a1f' }}>
+                  → 单独打开 chat-embed.html
+                </a>
+              </div>
+            </TweakSection>
+          </TweaksPanel>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>厅堂 RAG 助理 · 项目案例 · 王艺师</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #ece8df;
+      --paper: #f5f1e8;
+      --paperHi: #fbf8f0;
+      --ink: #0a0a0a;
+      --inkDim: #3d3a35;
+      --inkMute: #7a7670;
+      --line: rgba(10,10,10,0.2);
+      --lineSoft: rgba(10,10,10,0.08);
+      --accent: #dd2a1f;
+      --onAccent: #ffffff;
+      --serif: "Newsreader", "Noto Serif SC", "Songti SC", Georgia, serif;
+      --display: "Archivo Black", "Inter", "Noto Sans SC", system-ui, sans-serif;
+      --sans: "Space Grotesk", "Inter", "Noto Sans SC", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", "JetBrains Mono", monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0a; --paper: #141414; --paperHi: #1c1c1c;
+        --ink: #ece8df; --inkDim: #a8a39a; --inkMute: #6a6760;
+        --line: rgba(236,232,223,0.2); --lineSoft: rgba(236,232,223,0.08);
+        --accent: #ff3a25;
+      }
+    }
+    html[data-theme="light"] {
+      --bg: #ece8df; --paper: #f5f1e8; --paperHi: #fbf8f0;
+      --ink: #0a0a0a; --inkDim: #3d3a35; --inkMute: #7a7670;
+      --line: rgba(10,10,10,0.2); --lineSoft: rgba(10,10,10,0.08);
+      --accent: #dd2a1f;
+    }
+    html[data-theme="dark"] {
+      --bg: #0a0a0a; --paper: #141414; --paperHi: #1c1c1c;
+      --ink: #ece8df; --inkDim: #a8a39a; --inkMute: #6a6760;
+      --line: rgba(236,232,223,0.2); --lineSoft: rgba(236,232,223,0.08);
+      --accent: #ff3a25;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+    /* ─── Top bar ───────────────────────────────────────────── */
+    .top {
+      height: 56px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 4vw, 36px);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+      position: sticky; top: 0; background: var(--bg); z-index: 50;
+    }
+    .top-left { display: flex; align-items: center; gap: 14px; }
+    .top-portrait { width: 26px; height: 26px; object-fit: cover; border: 1.5px solid var(--ink); flex-shrink: 0; }
+    .top-back { color: var(--inkDim); text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; transition: border-color .1s, color .1s; }
+    .top-back:hover { color: var(--ink); border-bottom-color: var(--accent); }
+    .top-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+    .top-right { display: flex; gap: 14px; align-items: center; color: var(--inkDim); }
+    .top-right a { color: inherit; text-decoration: none; }
+    .top-resume {
+      font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.2px;
+      color: var(--ink); text-transform: uppercase; text-decoration: none;
+      padding: 5px 10px; border: 1.5px solid var(--ink);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background .1s, color .1s;
+    }
+    .top-resume:hover { background: var(--accent); color: var(--onAccent); border-color: var(--accent); }
+    .theme-chip {
+      display: flex; border: 1.5px solid var(--ink);
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase;
+    }
+    .theme-chip button {
+      background: transparent; border: 0; border-left: 1px solid var(--ink);
+      padding: 5px 9px; font: inherit; letter-spacing: inherit; text-transform: inherit;
+      color: var(--ink); cursor: pointer;
+    }
+    .theme-chip button:first-child { border-left: 0; }
+    .theme-chip button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+    /* ─── Project header ────────────────────────────────────── */
+    .ph { padding: clamp(36px, 5vw, 64px) clamp(20px, 4vw, 56px) clamp(20px, 3vw, 32px); max-width: 1280px; margin: 0 auto; }
+    .ph-meta {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--inkDim);
+      display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-bottom: 28px;
+    }
+    .ph-meta .ticker { color: var(--accent); }
+    .ph h1 { font-family: var(--display); font-weight: 900; font-size: clamp(40px, 7vw, 96px); line-height: 0.94; letter-spacing: -0.03em; margin: 0 0 16px; text-transform: none; }
+    .ph h1 .red { color: var(--accent); }
+    .ph .dek { font-family: var(--serif); font-style: italic; font-size: clamp(18px, 2.1vw, 25px); line-height: 1.4; color: var(--inkDim); max-width: 760px; margin: 0; }
+    .ph-byline { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 28px; padding-top: 16px; border-top: 1.5px solid var(--ink); font-family: var(--mono); font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--inkDim); }
+    .ph-byline strong { color: var(--ink); display: block; font-weight: 700; margin-bottom: 2px; }
+    .ph-byline span > span { color: var(--inkMute); font-weight: 400; }
+
+    /* ─── HERO METRIC BLOCK — the big number ────────────────── */
+    .hero-metric {
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 clamp(20px, 4vw, 56px) clamp(40px, 6vw, 80px);
+    }
+    .metric-frame {
+      border: 1.5px solid var(--ink); padding: clamp(28px, 5vw, 64px) clamp(24px, 4vw, 48px);
+      background: var(--paperHi); position: relative;
+    }
+    .metric-label {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--inkDim); margin-bottom: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+    .metric-row { display: flex; align-items: baseline; gap: clamp(12px, 2vw, 28px); flex-wrap: wrap; }
+    .metric-num {
+      font-family: var(--display); font-weight: 900;
+      font-size: clamp(72px, 16vw, 240px); line-height: 0.85; letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric-num .from { color: var(--inkMute); text-decoration: line-through; text-decoration-thickness: 6px; text-decoration-color: var(--accent); }
+    .metric-num .to { color: var(--accent); }
+    .metric-num .arrow { font-family: var(--mono); color: var(--inkDim); font-weight: 400; font-size: 0.55em; padding: 0 0.2em; vertical-align: 0.2em; }
+    .metric-caption { font-family: var(--serif); font-style: italic; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.4; color: var(--inkDim); margin-top: 22px; max-width: 640px; }
+    .metric-supplementary {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0;
+      margin-top: 32px; border-top: 1.5px solid var(--line);
+    }
+    .metric-sup {
+      padding: 18px 18px 18px 0; border-right: 1px solid var(--line);
+    }
+    .metric-sup:last-child { border-right: none; padding-right: 0; }
+    .metric-sup-num { font-family: var(--display); font-size: clamp(28px, 3vw, 40px); font-weight: 900; line-height: 1; letter-spacing: -0.02em; }
+    .metric-sup-num .accent { color: var(--accent); }
+    .metric-sup-label { font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--inkMute); margin-top: 8px; }
+
+    /* ─── Body sections ─────────────────────────────────────── */
+    .body { max-width: 1280px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px); }
+    .section { padding: clamp(40px, 6vw, 80px) 0; border-top: 1.5px solid var(--ink); }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: clamp(20px, 3vw, 36px); }
+    .section-num { font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); }
+    .section-h2 { font-family: var(--display); font-weight: 900; font-size: clamp(32px, 5vw, 64px); line-height: 0.96; letter-spacing: -0.025em; margin: 0; text-transform: uppercase; }
+    .section-h2 .red { color: var(--accent); }
+    .section-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.8px; color: var(--inkMute); text-transform: uppercase; }
+
+    .prose { font-family: var(--serif); font-size: clamp(17px, 1.3vw, 19px); line-height: 1.6; color: var(--ink); max-width: 720px; }
+    .prose p { margin: 0 0 1.1em; }
+    .prose strong { color: var(--ink); }
+    .prose em { font-style: italic; color: var(--accent); }
+
+    /* Two-column for problem/quote pairing */
+    .two-col { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: start; }
+    @media (max-width: 820px) { .two-col { grid-template-columns: 1fr; } }
+    .quote-card {
+      border: 1.5px solid var(--ink); padding: 22px; background: var(--paperHi);
+    }
+    .quote-card .q-label { font-family: var(--mono); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--inkMute); margin-bottom: 10px; }
+    .quote-card .q-body { font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.45; color: var(--ink); }
+    .quote-card .q-by { font-family: var(--mono); font-size: 10px; letter-spacing: 0.6px; color: var(--inkMute); margin-top: 12px; text-transform: uppercase; }
+
+    /* ─── Four-domain knowledge diagram ─────────────────────── */
+    .domains { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--ink); }
+    @media (max-width: 720px) { .domains { grid-template-columns: repeat(2, 1fr); } }
+    .domain {
+      padding: 22px 20px; border-right: 1px solid var(--line); position: relative;
+      background: var(--paperHi);
+    }
+    .domain:last-child { border-right: none; }
+    @media (max-width: 720px) {
+      .domain:nth-child(2) { border-right: none; }
+      .domain:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    }
+    .domain-num { position: absolute; top: 16px; right: 18px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.2px; color: var(--inkMute); }
+    .domain-name { font-family: var(--display); font-weight: 900; font-size: 22px; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 6px; }
+    .domain-name .red { color: var(--accent); }
+    .domain-count { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-bottom: 12px; letter-spacing: 0.5px; }
+    .domain-desc { font-family: var(--sans); font-size: 13px; line-height: 1.5; color: var(--inkDim); }
+
+    /* ─── Process timeline (V1 / V2 / V3) ───────────────────── */
+    .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--ink); }
+    @media (max-width: 720px) { .timeline { grid-template-columns: 1fr; } }
+    .tl-stage { padding: 24px; border-right: 1px solid var(--line); position: relative; }
+    .tl-stage:last-child { border-right: none; }
+    @media (max-width: 720px) {
+      .tl-stage { border-right: none; border-bottom: 1px solid var(--line); }
+      .tl-stage:last-child { border-bottom: none; }
+    }
+    .tl-stage.active { background: var(--accent); color: var(--onAccent); }
+    .tl-stage.active .tl-num,
+    .tl-stage.active .tl-when,
+    .tl-stage.active .tl-list { color: rgba(255,255,255,0.85); }
+    .tl-num { font-family: var(--mono); font-size: 11px; letter-spacing: 1.2px; color: var(--inkMute); }
+    .tl-name { font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: -0.02em; text-transform: uppercase; margin-top: 6px; }
+    .tl-when { font-family: var(--mono); font-size: 11px; color: var(--inkDim); margin-top: 4px; }
+    .tl-list { font-family: var(--serif); font-size: 14.5px; line-height: 1.5; margin-top: 14px; color: var(--inkDim); padding-left: 0; list-style: none; }
+    .tl-list li { padding: 4px 0 4px 16px; position: relative; }
+    .tl-list li::before { content: "▸"; position: absolute; left: 0; font-family: var(--mono); font-size: 11px; }
+
+    /* ─── Decisions list ────────────────────────────────────── */
+    .decisions { display: flex; flex-direction: column; gap: 0; border-top: 1.5px solid var(--ink); }
+    .decision { padding: 24px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 60px minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 32px); align-items: start; }
+    @media (max-width: 820px) { .decision { grid-template-columns: 50px 1fr; }
+      .decision-impact { grid-column: 1 / 3; padding-top: 8px; } }
+    .decision-num { font-family: var(--mono); font-size: 12px; letter-spacing: 1.2px; color: var(--inkMute); padding-top: 4px; }
+    .decision-h { font-family: var(--display); font-weight: 900; font-size: clamp(20px, 2vw, 26px); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 10px; text-transform: uppercase; }
+    .decision-h .red { color: var(--accent); }
+    .decision-p { font-family: var(--serif); font-size: 16px; line-height: 1.55; color: var(--inkDim); }
+    .decision-impact {
+      font-family: var(--mono); font-size: 12.5px; line-height: 1.5; color: var(--ink);
+      padding: 12px 14px; background: var(--paperHi); border-left: 3px solid var(--accent);
+    }
+    .decision-impact strong { color: var(--accent); font-weight: 700; }
+
+    /* ─── Outcomes grid ─────────────────────────────────────── */
+    .outcomes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--ink); }
+    @media (max-width: 720px) { .outcomes { grid-template-columns: 1fr; } }
+    .outcome { padding: 28px 24px; border-right: 1px solid var(--line); }
+    .outcome:last-child { border-right: none; }
+    @media (max-width: 720px) {
+      .outcome { border-right: none; border-bottom: 1px solid var(--line); }
+      .outcome:last-child { border-bottom: none; }
+    }
+    .outcome.red { background: var(--accent); color: var(--onAccent); }
+    .outcome-num { font-family: var(--display); font-weight: 900; font-size: clamp(40px, 4.5vw, 60px); line-height: 0.9; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .outcome-num .accent { color: var(--accent); }
+    .outcome-label { font-family: var(--mono); font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; margin-top: 10px; opacity: 0.7; }
+    .outcome-note { font-family: var(--serif); font-size: 14px; line-height: 1.5; margin-top: 12px; opacity: 0.85; }
+
+    /* ─── Reflections list ──────────────────────────────────── */
+    .reflections { display: flex; flex-direction: column; gap: 0; }
+    .reflection { padding: 18px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: baseline; }
+    .reflection:last-child { border-bottom: none; }
+    .reflection-num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 1px; }
+    .reflection-text { font-family: var(--serif); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.5; color: var(--ink); }
+    .reflection-text em { font-style: italic; color: var(--accent); }
+
+    /* ─── Embedded chat ─────────────────────────────────────── */
+    .embed-section { border-top: 2px solid var(--ink); background: var(--paper); padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 56px) 0; }
+    .embed-inner { max-width: 1280px; margin: 0 auto; }
+    .embed-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--inkDim); display: flex; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
+    .embed-meta .ticker { color: var(--accent); }
+    .embed-section h2 { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 5vw, 64px); line-height: 0.96; letter-spacing: -0.025em; margin: 0 0 12px; text-transform: uppercase; }
+    .embed-section h2 .red { color: var(--accent); }
+    .embed-section .dek { font-family: var(--serif); font-style: italic; font-size: clamp(16px, 1.7vw, 20px); line-height: 1.4; color: var(--inkDim); max-width: 640px; margin: 0 0 28px; }
+    .embed-frame { border: 1.5px solid var(--ink); background: var(--bg); height: 640px; width: 100%; display: block; }
+    .embed-cap { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.5px; color: var(--inkMute); margin-top: 12px; padding-bottom: clamp(28px, 4vw, 48px); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+    /* ─── Marquee ───────────────────────────────────────────── */
+    .marquee { border-top: 2px solid var(--ink); background: var(--bg); height: 38px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
+    .marquee-inner { font-family: var(--display); font-size: 13px; letter-spacing: 6px; text-transform: uppercase; padding-left: 4vw; animation: mq 36s linear infinite; }
+    @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    .hidden-mobile { display: inline; }
+    @media (max-width: 600px) {
+      .hidden-mobile { display: none; }
+      .top-right { gap: 10px; }
+    }
+  
+    /* ─── Project-to-project nav ────────────────────────────── */
+    .proj-nav-strip { border-top: 1.5px solid var(--ink); display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); }
+    .pn-side { padding: clamp(28px, 4vw, 48px) clamp(20px, 4vw, 56px); color: var(--ink); text-decoration: none; display: flex; flex-direction: column; gap: 8px; transition: background .18s, color .15s, transform .18s, box-shadow .18s; min-height: 130px; position: relative; }
+    .pn-side:hover { background: var(--paperHi); transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--ink); z-index: 2; }
+    .pn-side:hover .pn-name { color: var(--accent); }
+    .pn-prev { border-right: 1px solid var(--line); align-items: flex-start; text-align: left; }
+    .pn-next { align-items: flex-end; text-align: right; border-left: 0; }
+    .pn-dir { font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); }
+    .pn-num { font-family: var(--mono); font-size: 11px; letter-spacing: 1.2px; color: var(--inkMute); }
+    .pn-name { font-family: var(--display); font-weight: 900; font-size: clamp(24px, 3vw, 36px); letter-spacing: -0.025em; line-height: 1.05; margin-top: 2px; transition: color .15s; }
+    .pn-tag { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--inkDim); margin-top: 2px; }
+    .pn-side.pn-disabled { pointer-events: none; }
+    .pn-side.pn-disabled .pn-name { color: var(--inkMute); }
+    .pn-side.pn-disabled .pn-dir { color: var(--inkMute); }
+    @media (max-width: 720px) {
+      .proj-nav-strip { grid-template-columns: 1fr; }
+      .pn-prev { border-right: 0; border-bottom: 1px solid var(--line); }
+      .pn-next { align-items: flex-start; text-align: left; }
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="top">
+    <div class="top-left">
+      <img class="top-portrait" src="assets/portrait.png" alt="王艺师" />
+      <a class="top-back" href="index.html">← 王艺师 · YISHI WANG</a>
+      <span class="top-dot" title="open to work"></span>
+    </div>
+    <div class="top-right">
+      <span class="hidden-mobile"><a href="work.html">WORK · 作品</a></span>
+      <a class="top-resume" href="resume.pdf" download="王艺师_简历_2026.pdf">简历 PDF <span>↓</span></a>
+      <div class="theme-chip" role="radiogroup" aria-label="主题">
+        <button type="button" data-theme="system" aria-pressed="true">自动</button>
+        <button type="button" data-theme="light" aria-pressed="false">浅</button>
+        <button type="button" data-theme="dark" aria-pressed="false">深</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- PROJECT HEADER -->
+  <div class="ph">
+    <div class="ph-meta">
+      <span>项目 № 002 · WORK · 案例研究</span>
+      <span class="ticker">● LIVE · 二期已立项</span>
+      <span>2024.03 — 2025.03 · 12 个月</span>
+    </div>
+    <h1>厅堂大模型助理<br>（<span class="red">RAG</span>）<span class="red">.</span></h1>
+    <p class="dek">
+      为一线员工建一个"问就答"的助理。从 0 主导基于公司大模型底座 + RAG 的实现，把回答准确率从 61% 推到 84%，落地全行 1000+ 网点。
+    </p>
+    <div class="ph-byline">
+      <span><strong>角色</strong>AI 产品负责人 · 唯一 PM</span>
+      <span><strong>团队</strong>2 PM · 1 算法 · 2 工程 · 2 实习生</span>
+      <span><strong>规模</strong>8000+ 知识条目 · 评测样本 800</span>
+      <span><strong>结果</strong>条线 AI 表彰 · 二期立项</span>
+    </div>
+  </div>
+
+  <!-- HERO METRIC -->
+  <section class="hero-metric">
+    <div class="metric-frame">
+      <div class="metric-label">
+        <span>核心指标 · KEY METRIC</span>
+        <span>评测体系 V1 → V3 · 12 个月</span>
+      </div>
+      <div class="metric-row">
+        <div class="metric-num">
+          <span class="from">61%</span>
+          <span class="arrow">→</span>
+          <span class="to">84%</span>
+        </div>
+      </div>
+      <p class="metric-caption">
+        — 人工标注的回答准确率。<br>
+        每次模型 / Prompt 变更前全量回归 800 条样本，三版评测体系迭代后建立可被审计的准确率口径。
+      </p>
+
+      <div class="metric-supplementary">
+        <div class="metric-sup">
+          <div class="metric-sup-num"><span class="accent">68% → 86%</span></div>
+          <div class="metric-sup-label">Top-3 检索命中率</div>
+        </div>
+        <div class="metric-sup">
+          <div class="metric-sup-num">82<span style="font-size:0.5em;">%</span></div>
+          <div class="metric-sup-label">30 天主动留存率</div>
+        </div>
+        <div class="metric-sup">
+          <div class="metric-sup-num">4.2<span style="font-size:0.5em;">/日</span></div>
+          <div class="metric-sup-label">人均查询次数</div>
+        </div>
+        <div class="metric-sup">
+          <div class="metric-sup-num">8000<span style="font-size:0.5em;">+</span></div>
+          <div class="metric-sup-label">治理后知识条目</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- 01 · CONTEXT -->
+    <section class="section" style="border-top: none;">
+      <div class="section-head">
+        <div>
+          <div class="section-num">01 / 背景</div>
+          <h2 class="section-h2"><span class="red">300+</span> 产品<br>上千页说明书<br>3–6 个月上手</h2>
+        </div>
+        <div class="section-meta">CONTEXT</div>
+      </div>
+
+      <div class="two-col">
+        <div class="prose">
+          <p>大行网点的一线员工每天面对的是一个非常稠密的知识空间——<strong>300+ 在售产品、上千页产品说明书、随时更新的合规要求和话术口径</strong>。新人正式上手需要 3 到 6 个月。</p>
+          <p>原有解决方案是「问老员工」+「翻飞书文档」。这两条路都不可扩展：老员工的时间是稀缺资源，文档则是写完即过时的死物。</p>
+          <p>立项的时候，公司大模型底座刚上线，<em>"用 AI 帮一线员工"</em> 是一个被各部门同时提出的需求方向。我们这条线选择从 <strong>RAG 助理</strong> 切入——既能复用底座，又不依赖于训练自己的模型。</p>
+        </div>
+
+        <div class="quote-card">
+          <div class="q-label">立项时的真实声音</div>
+          <div class="q-body">
+            "我刚转岗一个月，今天客户问我反向房贷的还款细节，我翻了三个文档没找到，最后跑去问王姐——她也找了五分钟。"
+          </div>
+          <div class="q-by">— 某分行新柜员 · 调研第 4 周</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 · APPROACH -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-num">02 / 我做了什么</div>
+          <h2 class="section-h2">建一个<span class="red">可被审计</span>的<br>知识系统，<br>而不是一个能答的 demo<span class="red">.</span></h2>
+        </div>
+        <div class="section-meta">APPROACH</div>
+      </div>
+
+      <div class="prose" style="margin-bottom: 32px;">
+        <p>大模型问答的难点从来不是「能不能答出来」——是「答得对不对、为什么答得对、答错了怎么修」。Demo 阶段做出一个能跑的 RAG 不难。真正决定能不能上线、能不能持续维护的，是这套系统的<strong>可治理性</strong>。</p>
+        <p>所以我把第一性精力放在知识库本身的结构上。8000+ 条目，按业务语义而不是文件路径切分。每一条都有 owner、有效期、版本号。</p>
+      </div>
+
+      <!-- Four-domain diagram -->
+      <div class="domains">
+        <div class="domain">
+          <div class="domain-num">01</div>
+          <div class="domain-name"><span class="red">产品</span></div>
+          <div class="domain-count">~3,200 条</div>
+          <div class="domain-desc">在售 300+ 产品的要素、利率、起投、风险等级、合规话术。Owner 锁定产品经理一线。</div>
+        </div>
+        <div class="domain">
+          <div class="domain-num">02</div>
+          <div class="domain-name"><span class="red">话术</span></div>
+          <div class="domain-count">~1,800 条</div>
+          <div class="domain-desc">客户常见问题的标准回答 + 反向 Q&A。Owner 是培训中心，每月例行回顾。</div>
+        </div>
+        <div class="domain">
+          <div class="domain-num">03</div>
+          <div class="domain-name"><span class="red">流程</span></div>
+          <div class="domain-count">~2,100 条</div>
+          <div class="domain-desc">业务办理步骤、所需材料、办理时限、跨系统跳转。Owner 是运营。</div>
+        </div>
+        <div class="domain">
+          <div class="domain-num">04</div>
+          <div class="domain-name"><span class="red">合规</span></div>
+          <div class="domain-count">~900 条</div>
+          <div class="domain-desc">敏感话术、不允许承诺事项、监管要求红线。Owner 是合规，<strong>变更走双签流程</strong>。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · KEY DECISIONS -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-num">03 / 关键决策</div>
+          <h2 class="section-h2">三个让<br>准确率<span class="red">真</span>涨上去的<br>决定</h2>
+        </div>
+        <div class="section-meta">KEY DECISIONS</div>
+      </div>
+
+      <div class="decisions">
+
+        <div class="decision">
+          <div class="decision-num">01.</div>
+          <div>
+            <div class="decision-h">把切片策略和算法<span class="red">共定</span></div>
+            <div class="decision-p">
+              不让算法独立决定怎么切产品说明书。我和算法工程师一起标了 50 份典型样本，按业务语义分块——一段是"产品要素"、一段是"风险提示"——而不是按段落字符数。Top-3 命中率从 68% 涨到 86%，几乎是 RAG 准确率提升的主要来源。
+            </div>
+          </div>
+          <div class="decision-impact"><strong>+18pct</strong> Top-3 命中率 · 算法基线之上</div>
+        </div>
+
+        <div class="decision">
+          <div class="decision-num">02.</div>
+          <div>
+            <div class="decision-h">建立<span class="red">Owner + 有效期</span>治理机制</div>
+            <div class="decision-p">
+              知识库最大的敌人不是覆盖率，是「过期内容」。我推动把所有 8000+ 条目都强制绑定一个业务方 owner，并设有效期。有效期到了未续期，自动从检索池下线。从第三个月起，「答错是因为知识旧了」这条故障率降到接近零。
+            </div>
+          </div>
+          <div class="decision-impact"><strong>0.4%</strong> 因过期内容回答错误（V1：12%）</div>
+        </div>
+
+        <div class="decision">
+          <div class="decision-num">03.</div>
+          <div>
+            <div class="decision-h"><span class="red">6 维评测</span>+ 全量回归</div>
+            <div class="decision-p">
+              把"准确率"拆成 6 维：召回是否覆盖、引用是否正确、表述是否合规、口径是否一致、是否拒答、回复时长。每次 Prompt 或者切片策略变更前，全量跑 800 条离线样本+ 6 维人工评测。这成了团队迭代的安全网——任何人改动都不需要"先观察一周"。
+            </div>
+          </div>
+          <div class="decision-impact"><strong>1 周 → 1 天</strong> 单次迭代的验证周期</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 04 · TIMELINE -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-num">04 / 迭代节奏</div>
+          <h2 class="section-h2">V1 / V2 / V3<span class="red">.</span></h2>
+        </div>
+        <div class="section-meta">12 MONTHS · THREE VERSIONS</div>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-stage">
+          <div class="tl-num">V1 · 2024.03 — 06</div>
+          <div class="tl-name">MVP</div>
+          <div class="tl-when">准确率 61%</div>
+          <ul class="tl-list">
+            <li>跑通 RAG 主链路</li>
+            <li>知识库一期：仅"产品"域</li>
+            <li>限定 3 家试点分行</li>
+            <li>评测体系 V1 · 简单准确率口径</li>
+          </ul>
+        </div>
+        <div class="tl-stage">
+          <div class="tl-num">V2 · 2024.07 — 11</div>
+          <div class="tl-name">功能稳定</div>
+          <div class="tl-when">准确率 74%</div>
+          <ul class="tl-list">
+            <li>四域知识结构落地（+话术/流程/合规）</li>
+            <li>切片策略人工标注介入</li>
+            <li>Owner + 有效期机制上线</li>
+            <li>评测体系 V2 · 6 维拆解</li>
+          </ul>
+        </div>
+        <div class="tl-stage active">
+          <div class="tl-num">V3 · 2024.12 — 2025.03</div>
+          <div class="tl-name">双轨优化</div>
+          <div class="tl-when">准确率 84% · 全行推广</div>
+          <ul class="tl-list">
+            <li>业务反馈漏斗 + 数据漏斗双轨</li>
+            <li>评测体系 V3 · 800 条全量回归</li>
+            <li>1000+ 网点全行落地</li>
+            <li>条线 AI 转型表彰 · 二期立项</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · OUTCOMES -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-num">05 / 结果</div>
+          <h2 class="section-h2">数字<span class="red">+</span><br>非数字<span class="red">.</span></h2>
+        </div>
+        <div class="section-meta">OUTCOMES</div>
+      </div>
+
+      <div class="outcomes" style="margin-bottom: 28px;">
+        <div class="outcome red">
+          <div class="outcome-num">+23<span style="font-size:0.5em;">pct</span></div>
+          <div class="outcome-label">回答准确率</div>
+          <div class="outcome-note">61% → 84% · 人工标注口径</div>
+        </div>
+        <div class="outcome">
+          <div class="outcome-num">82<span style="font-size:0.5em;">%</span></div>
+          <div class="outcome-label">30 天主动留存率</div>
+          <div class="outcome-note">用户用了第二个月还回来用</div>
+        </div>
+        <div class="outcome">
+          <div class="outcome-num">1000<span style="font-size:0.5em;">+</span></div>
+          <div class="outcome-label">落地网点</div>
+          <div class="outcome-note">全行覆盖 · 二期立项</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>除了数字本身，更值得说的是这套系统留下了什么：</p>
+        <p>—— <strong>《RAG 知识治理规范 V1.0》</strong>成了部门内做大模型问答的统一基线，后面两个团队的项目直接复用；</p>
+        <p>—— <strong>「Owner + 有效期」</strong>机制被合规部门拿去做监管报送的知识库治理参考；</p>
+        <p>—— 这套评测体系成为下一个项目（Agent）的<em>骨架</em>，"任务完成率/工具调用准确率/决策链合理性/端到端耗时"四维评测直接继承自这里的 6 维拆法。</p>
+      </div>
+    </section>
+
+    <!-- 06 · LESSONS -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-num">06 / 反思</div>
+          <h2 class="section-h2">回看的话，<br><span class="red">三件事</span>我会改</h2>
+        </div>
+        <div class="section-meta">LESSONS</div>
+      </div>
+
+      <div class="reflections">
+        <div class="reflection">
+          <div class="reflection-num">01</div>
+          <div class="reflection-text">
+            <em>评测体系</em>应该是 V1 就建起来的。我们到 V2 才系统化拆维度，前 4 个月调 Prompt 全靠感觉——浪费了至少两轮迭代。
+          </div>
+        </div>
+        <div class="reflection">
+          <div class="reflection-num">02</div>
+          <div class="reflection-text">
+            一开始<em>过度优化</em>了"产品域"的覆盖率（条目从 1000 堆到 3200），但实际查询命中分布显示用户更想问"<em>流程</em>"。优先级的判断应该基于真实查询数据，而不是知识库本身的丰富度。
+          </div>
+        </div>
+        <div class="reflection">
+          <div class="reflection-num">03</div>
+          <div class="reflection-text">
+            <em>给一线员工的拒答机制</em>做得不够。前两版当模型不确定时也会答，让用户失去信任；V3 加了显式的"我不确定，建议你查 XX 文档"才好转——但这本来应该是 day 1 设计。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 · NEXT -->
+    <section class="section" style="padding-bottom: clamp(40px, 6vw, 80px);">
+      <div class="section-head">
+        <div>
+          <div class="section-num">07 / 下一步</div>
+          <h2 class="section-h2">从「能查到」<br>到「<span class="red">替我做</span>」</h2>
+        </div>
+        <div class="section-meta">WHAT&apos;S NEXT</div>
+      </div>
+
+      <div class="prose">
+        <p>一期 RAG 助理解决了"能查到信息"，但用户的真实耗时其实在<strong>判断链路</strong>——找谁、推什么、何时做。基于 3 个月使用数据复盘，我提出了 <strong>Agent 化升级方案</strong>，独立完成方案撰写、Demo 演示、立项答辩。</p>
+        <p>Agent 二期已经覆盖 10+ 分行，是 2026 年 AI 转型的首个 Agent 落地项目。这里就不展开了——如果想聊 Agent 的设计取舍，<em>下面有个对话窗口可以直接问我</em>。</p>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- PROJECT NAV (prev / next) -->
+  <nav class="proj-nav-strip">
+    <a class="pn-side pn-prev" href="project-recommend.html">
+      <span class="pn-dir">← 上一个项目</span>
+      <span class="pn-num">№.001</span>
+      <span class="pn-name">智能跟进推荐</span>
+      <span class="pn-tag">三层模型 · 2023 · 推荐</span>
+    </a>
+    <a class="pn-side pn-next" href="project-agent.html">
+      <span class="pn-dir">下一个项目 →</span>
+      <span class="pn-num">№.003</span>
+      <span class="pn-name">金融场景 Agent</span>
+      <span class="pn-tag">三档协作 · 2025 · Agent</span>
+    </a>
+  </nav>
+
+  <!-- EMBEDDED CHAT -->
+  <section class="embed-section">
+    <div class="embed-inner">
+      <div class="embed-meta">
+        <span>⑧ 想问这个项目的细节 · ASK ME</span>
+        <span class="ticker">● LIVE</span>
+        <span>EMBED · CHAT-EMBED.HTML</span>
+      </div>
+      <h2>关于<span class="red">RAG</span>的细节<br>问我吧<span class="red">.</span></h2>
+      <p class="dek">
+        — 切片策略具体怎么和算法对齐？四域结构是怎么演化出来的？评测的 800 条样本怎么选的？直接问。
+      </p>
+      <div id="chat-frame" class="embed-frame"></div>
+      <div class="embed-cap">
+        <span>↑ 在你自己的博客 / 落地页里，这里就是 <code style="font-family:var(--mono);font-size:11px;background:var(--paperHi);padding:1px 5px;">&lt;iframe src="chat-embed.html?seed=projects"&gt;</code></span>
+        <span>当前页面：内联渲染（沙盒预览限制）</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="marquee-inner">
+      项目 №.002 · 厅堂 RAG 助理 · 61% → 84% · 全行 1000+ 网点 · 二期立项 · hi@shiizone.com · 项目 №.002 ·
+    </div>
+  </div>
+
+  <!-- LOAD CHAT COMPONENT -->
+  <script type="text/babel" src="directions/shared.jsx"></script>
+  <script type="text/babel" src="fusion/theme.jsx"></script>
+  <script type="text/babel" src="fusion/chat.jsx"></script>
+
+  <!-- THEME TOGGLE + INLINE CHAT MOUNT -->
+  <script type="text/babel">
+    (function() {
+      const KEY = 'wang-theme';
+      const html = document.documentElement;
+      const buttons = document.querySelectorAll('.theme-chip button');
+      let themePref = 'system';
+
+      function applyParent(pref) {
+        themePref = pref;
+        if (pref === 'system') html.removeAttribute('data-theme');
+        else html.setAttribute('data-theme', pref);
+        buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.theme === pref ? 'true' : 'false'));
+        try { localStorage.setItem(KEY, pref); } catch (e) {}
+        window.dispatchEvent(new CustomEvent('article-theme-change'));
+      }
+
+      const saved = (function(){ try { return localStorage.getItem(KEY); } catch(e) { return null; } })() || 'system';
+      applyParent(saved);
+      buttons.forEach(b => b.addEventListener('click', () => applyParent(b.dataset.theme)));
+
+      function ChatMount() {
+        const [pref, setPref] = React.useState(themePref);
+        React.useEffect(() => {
+          const h = () => setPref(themePref);
+          window.addEventListener('article-theme-change', h);
+          return () => window.removeEventListener('article-theme-change', h);
+        }, []);
+        const mode = useSystemColorScheme(pref);
+        const t = FusionTheme(mode);
+        return <FusionChatPanel t={t} embedded={true} seed="projects" />;
+      }
+
+      function mount() {
+        if (!window.FusionChatPanel || !window.FusionTheme || !window.useSystemColorScheme || !window.SITE_DATA) {
+          setTimeout(mount, 80);
+          return;
+        }
+        const root = document.getElementById('chat-frame');
+        ReactDOM.createRoot(root).render(<ChatMount />);
+      }
+      mount();
+    })();
+  </script>
+</body>
+</html>

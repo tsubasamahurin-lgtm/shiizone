@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作品索引 · WORK · 王艺师</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #ece8df; --paper: #f5f1e8; --paperHi: #fbf8f0;
+      --ink: #0a0a0a; --inkDim: #3d3a35; --inkMute: #7a7670;
+      --line: rgba(10,10,10,0.2); --lineSoft: rgba(10,10,10,0.08);
+      --accent: #dd2a1f; --onAccent: #ffffff;
+      --serif: "Newsreader", "Noto Serif SC", "Songti SC", Georgia, serif;
+      --display: "Archivo Black", "Inter", "Noto Sans SC", system-ui, sans-serif;
+      --sans: "Space Grotesk", "Inter", "Noto Sans SC", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", "JetBrains Mono", monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0a; --paper: #141414; --paperHi: #1c1c1c;
+        --ink: #ece8df; --inkDim: #a8a39a; --inkMute: #6a6760;
+        --line: rgba(236,232,223,0.2); --lineSoft: rgba(236,232,223,0.08);
+        --accent: #ff3a25;
+      }
+    }
+    html[data-theme="light"] {
+      --bg: #ece8df; --paper: #f5f1e8; --paperHi: #fbf8f0;
+      --ink: #0a0a0a; --inkDim: #3d3a35; --inkMute: #7a7670;
+      --line: rgba(10,10,10,0.2); --lineSoft: rgba(10,10,10,0.08);
+      --accent: #dd2a1f;
+    }
+    html[data-theme="dark"] {
+      --bg: #0a0a0a; --paper: #141414; --paperHi: #1c1c1c;
+      --ink: #ece8df; --inkDim: #a8a39a; --inkMute: #6a6760;
+      --line: rgba(236,232,223,0.2); --lineSoft: rgba(236,232,223,0.08);
+      --accent: #ff3a25;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+    /* ─── Top bar (same as project pages) ───────────────── */
+    .top {
+      height: 56px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 4vw, 36px);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+      position: sticky; top: 0; background: var(--bg); z-index: 50;
+    }
+    .top-left { display: flex; align-items: center; gap: 14px; }
+    .top-portrait { width: 26px; height: 26px; object-fit: cover; border: 1.5px solid var(--ink); transition: transform .28s cubic-bezier(.34,1.56,.64,1); } .top-portrait:hover { transform: rotate(-4deg) scale(1.12); }
+    .top-back { color: var(--inkDim); text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; transition: border-color .1s, color .1s; }
+    .top-back:hover { color: var(--ink); border-bottom-color: var(--accent); }
+    .top-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+    .top-right { display: flex; gap: 14px; align-items: center; color: var(--inkDim); }
+    .top-right a { color: inherit; text-decoration: none; }
+    .top-resume {
+      font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.2px;
+      color: var(--ink); text-transform: uppercase; text-decoration: none;
+      padding: 5px 10px; border: 1.5px solid var(--ink);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background .1s, color .1s;
+    }
+    .top-resume:hover { background: var(--accent); color: var(--onAccent); border-color: var(--accent); }
+    .theme-chip {
+      display: flex; border: 1.5px solid var(--ink);
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase;
+    }
+    .theme-chip button {
+      background: transparent; border: 0; border-left: 1px solid var(--ink);
+      padding: 5px 9px; font: inherit; letter-spacing: inherit; text-transform: inherit;
+      color: var(--ink); cursor: pointer;
+    }
+    .theme-chip button:first-child { border-left: 0; }
+    .theme-chip button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+    /* ─── Page header ──────────────────────────────────── */
+    .ph { max-width: 1280px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 56px) clamp(28px, 4vw, 48px); }
+    .ph-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--inkDim);
+      display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .ph-meta .ticker { color: var(--accent); }
+    .ph h1 { font-family: var(--display); font-weight: 900; font-size: clamp(48px, 9vw, 128px); line-height: 0.92; letter-spacing: -0.03em; margin: 0 0 16px; }
+    .ph h1 .red { color: var(--accent); }
+    .ph .dek { font-family: var(--serif); font-style: italic; font-size: clamp(18px, 2vw, 24px); line-height: 1.4; color: var(--inkDim); max-width: 760px; margin: 0; }
+
+    /* ─── Filter strip ─────────────────────────────────── */
+    .filter-strip { max-width: 1280px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px) clamp(24px, 3vw, 36px); }
+    .filters { border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: clamp(8px, 2vw, 24px); padding: 16px 0; flex-wrap: wrap; }
+    .filter-label { font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--inkMute); }
+    .filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      font: inherit; background: transparent; cursor: pointer;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+      padding: 6px 12px; border: 1.5px solid var(--ink); color: var(--ink);
+      transition: background .1s, color .1s;
+    }
+    .filter-btn:hover { background: var(--ink); color: var(--bg); }
+    .filter-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+    .filter-count { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: var(--inkMute); }
+    .filter-count .num { color: var(--accent); font-weight: 700; }
+
+    /* ─── Project cards ────────────────────────────────── */
+    .work-list { max-width: 1280px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px) clamp(40px, 6vw, 80px); display: flex; flex-direction: column; gap: 0; }
+    .work-card {
+      display: grid; grid-template-columns: 96px minmax(0, 1.2fr) minmax(0, 1fr) 140px;
+      gap: clamp(16px, 2vw, 32px); padding: clamp(24px, 3vw, 36px) 0;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none; color: var(--ink);
+      transition: background .15s, padding .15s;
+      align-items: start;
+    }
+    .work-card:first-child { border-top: 1.5px solid var(--ink); }
+    .work-card:hover { background: var(--paperHi); padding-left: 18px; padding-right: 18px; transform: translateX(2px); }
+    .work-card:hover .wc-name { color: var(--accent); }
+    .work-card { transition: background .18s, padding .18s, transform .18s; }
+    .work-card.hidden { display: none; }
+
+    .wc-num { font-family: var(--display); font-weight: 900; font-size: clamp(28px, 3vw, 38px); letter-spacing: -0.02em; line-height: 1; color: var(--inkMute); padding-top: 4px; }
+    .wc-title-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .wc-name { font-family: var(--display); font-weight: 900; font-size: clamp(28px, 3.5vw, 46px); letter-spacing: -0.025em; line-height: 0.98; text-transform: uppercase; transition: color .15s; }
+    .wc-name .red { color: var(--accent); }
+    .wc-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--inkMute); display: flex; gap: 14px; flex-wrap: wrap; }
+    .wc-meta .live { color: var(--accent); }
+    .wc-desc-col { font-family: var(--serif); font-size: clamp(15px, 1.2vw, 17px); line-height: 1.5; color: var(--inkDim); padding-top: 8px; }
+    .wc-desc-col strong { color: var(--ink); font-weight: 600; }
+    .wc-metric { display: flex; flex-direction: column; align-items: flex-end; text-align: right; padding-top: 4px; }
+    .wc-metric-num { font-family: var(--display); font-weight: 900; font-size: clamp(20px, 2vw, 28px); letter-spacing: -0.02em; line-height: 1; color: var(--ink); }
+    .wc-metric-num .accent { color: var(--accent); }
+    .wc-metric-label { font-family: var(--mono); font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--inkMute); margin-top: 8px; }
+    .wc-cta { display: flex; align-items: center; gap: 6px; margin-top: 14px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .work-card { grid-template-columns: 60px 1fr; }
+      .wc-desc-col { grid-column: 1 / 3; padding-top: 0; }
+      .wc-metric { grid-column: 1 / 3; align-items: flex-start; text-align: left; padding-top: 0; flex-direction: row; gap: 14px; align-items: baseline; }
+      .wc-metric-label { margin-top: 0; }
+    }
+
+    /* ─── Methodology lineage ─────────────────────────── */
+    .lineage-section { background: var(--paper); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: clamp(40px, 5vw, 64px) 0; }
+    .lineage-inner { max-width: 1280px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px); }
+    .lineage-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--inkDim); margin-bottom: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .lineage-meta .ticker { color: var(--accent); }
+    .lineage-section h2 { font-family: var(--display); font-weight: 900; font-size: clamp(28px, 4vw, 48px); line-height: 0.98; letter-spacing: -0.025em; margin: 0 0 18px; text-transform: uppercase; }
+    .lineage-section h2 .red { color: var(--accent); }
+    .lineage-section .dek { font-family: var(--serif); font-style: italic; font-size: clamp(15px, 1.4vw, 18px); line-height: 1.5; color: var(--inkDim); max-width: 720px; margin: 0 0 32px; }
+    .lineage-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1.5px solid var(--ink); background: var(--paperHi); }
+    @media (max-width: 720px) { .lineage-row { grid-template-columns: 1fr 1fr; } .lineage-cell:nth-child(2) { border-right: 0 !important; } .lineage-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+    .lineage-cell { padding: 22px 18px; border-right: 1px solid var(--line); position: relative; min-height: 160px; display: flex; flex-direction: column; }
+    .lineage-cell:last-child { border-right: 0; }
+    .lineage-year { font-family: var(--mono); font-size: 11px; letter-spacing: 1.2px; color: var(--accent); margin-bottom: 6px; }
+    .lineage-method { font-family: var(--display); font-weight: 900; font-size: clamp(20px, 2vw, 26px); letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 6px; line-height: 1.05; }
+    .lineage-method .red { color: var(--accent); }
+    .lineage-tagline { font-family: var(--serif); font-style: italic; font-size: 14px; line-height: 1.4; color: var(--inkDim); margin-top: auto; }
+    .lineage-arrow { position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 18px; color: var(--accent); background: var(--paperHi); padding: 0 4px; z-index: 1; }
+    @media (max-width: 720px) { .lineage-arrow { display: none; } }
+
+    /* ─── Marquee ──────────────────────────────────────── */
+    .marquee { border-top: 1px solid var(--line); background: var(--bg); height: 38px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
+    .marquee-inner { font-family: var(--display); font-size: 13px; letter-spacing: 6px; text-transform: uppercase; padding-left: 4vw; animation: mq 36s linear infinite; }
+    @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    .hidden-mobile { display: inline; }
+    @media (max-width: 600px) { .hidden-mobile { display: none; } .top-right { gap: 8px; } .top-resume { padding: 5px 8px; font-size: 9.5px; } .top-back { font-size: 10px; } .top-portrait { width: 22px; height: 22px; } }
+    @media (max-width: 420px) { .top-resume span { display: none; } .top-back { max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="top">
+    <div class="top-left">
+      <img class="top-portrait" src="assets/portrait.png" alt="王艺师" />
+      <a class="top-back" href="index.html">← 王艺师 · YISHI WANG</a>
+      <span class="top-dot" title="open to work"></span>
+    </div>
+    <div class="top-right">
+      <span class="hidden-mobile"><a href="index.html">HOME</a></span>
+      <a class="top-resume" href="resume.pdf" download="王艺师_简历_2026.pdf">简历 PDF <span>↓</span></a>
+      <div class="theme-chip" role="radiogroup" aria-label="主题">
+        <button type="button" data-theme="system" aria-pressed="true">自动</button>
+        <button type="button" data-theme="light" aria-pressed="false">浅</button>
+        <button type="button" data-theme="dark" aria-pressed="false">深</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HEADER -->
+  <div class="ph">
+    <div class="ph-meta">
+      <span>章节 № 03 · WORK · 作品索引</span>
+      <span class="ticker">● 全 4 个项目 · 4/4 LIVE</span>
+      <span>2022 — 2025 · 4 年</span>
+    </div>
+    <h1>WORK<span class="red">.</span></h1>
+    <p class="dek">
+      四个项目，四套方法论。从 2022 的<em>数据看板</em>到 2025 的 <em>Agent</em>——每一个都是上一个方法论的延伸。点项目名进案例研究。
+    </p>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-strip">
+    <div class="filters">
+      <span class="filter-label">筛选</span>
+      <div class="filter-btns" role="radiogroup">
+        <button class="filter-btn" data-filter="all" aria-pressed="true">全部</button>
+        <button class="filter-btn" data-filter="agent" aria-pressed="false">Agent</button>
+        <button class="filter-btn" data-filter="rag" aria-pressed="false">RAG / LLM</button>
+        <button class="filter-btn" data-filter="rec" aria-pressed="false">推荐</button>
+        <button class="filter-btn" data-filter="data" aria-pressed="false">数据产品</button>
+      </div>
+      <span class="filter-count">显示 <span class="num">4</span>/4 项</span>
+    </div>
+  </div>
+
+  <!-- PROJECT LIST -->
+  <div class="work-list" id="workList">
+
+    <!-- AGENT (003) — latest -->
+    <a class="work-card" href="project-agent.html" data-cat="agent">
+      <div class="wc-num">№.003</div>
+      <div class="wc-title-col">
+        <div class="wc-name">金融场景<br><span class="red">Agent.</span></div>
+        <div class="wc-meta">
+          <span>2025</span>
+          <span>Agent · 工具编排</span>
+          <span class="live">● LIVE · 10+ 分行</span>
+        </div>
+      </div>
+      <div class="wc-desc-col">
+        12 工具编排 + <strong>三档人机协作</strong>（自动 / 确认 / 接管）。把 RAG 的「能查到」升级为「替我做」，单次操作 4 → 1.5 步。<em>2026 AI 转型首个 Agent 落地</em>。
+      </div>
+      <div class="wc-metric">
+        <div class="wc-metric-num"><span class="accent">4 → 1.5</span> 步</div>
+        <div class="wc-metric-label">单次任务步数</div>
+        <div class="wc-cta">案例 ↗</div>
+      </div>
+    </a>
+
+    <!-- RAG (002) -->
+    <a class="work-card" href="project-rag.html" data-cat="rag">
+      <div class="wc-num">№.002</div>
+      <div class="wc-title-col">
+        <div class="wc-name">厅堂大模型<br>助理 (<span class="red">RAG</span>)</div>
+        <div class="wc-meta">
+          <span>2024</span>
+          <span>RAG · 大模型问答</span>
+          <span class="live">● LIVE · 1000+ 网点</span>
+        </div>
+      </div>
+      <div class="wc-desc-col">
+        建立 RAG <strong>四域知识结构</strong>（8000+ 条目）与评测回归方法。一线员工"问就答"的助理，从 61% 准确率推到 84%。<em>条线 AI 表彰 · 二期立项</em>。
+      </div>
+      <div class="wc-metric">
+        <div class="wc-metric-num"><span class="accent">61% → 84%</span></div>
+        <div class="wc-metric-label">回答准确率</div>
+        <div class="wc-cta">案例 ↗</div>
+      </div>
+    </a>
+
+    <!-- RECOMMEND (001) -->
+    <a class="work-card" href="project-recommend.html" data-cat="rec">
+      <div class="wc-num">№.001</div>
+      <div class="wc-title-col">
+        <div class="wc-name">智能跟进<br><span class="red">推荐.</span></div>
+        <div class="wc-meta">
+          <span>2023</span>
+          <span>推荐 · 三层模型</span>
+          <span class="live">● LIVE · 30+ 分行</span>
+        </div>
+      </div>
+      <div class="wc-desc-col">
+        把推荐拆成<strong>「分层 → 匹配 → 时机」三层</strong>。从员工自己挑客户过渡到系统排好的清单。点击率 38% → 62%，到访 / 联系转化 +18pct。
+      </div>
+      <div class="wc-metric">
+        <div class="wc-metric-num"><span class="accent">38% → 62%</span></div>
+        <div class="wc-metric-label">任务点击率</div>
+        <div class="wc-cta">案例 ↗</div>
+      </div>
+    </a>
+
+    <!-- DASHBOARD (000) — origin -->
+    <a class="work-card" href="project-dashboard.html" data-cat="data">
+      <div class="wc-num">№.000</div>
+      <div class="wc-title-col">
+        <div class="wc-name">经营<br><span class="red">看板.</span></div>
+        <div class="wc-meta">
+          <span>2022</span>
+          <span>数据产品 · 指标治理</span>
+          <span class="live">● LIVE · 1000+ 网点</span>
+        </div>
+      </div>
+      <div class="wc-desc-col">
+        把 60+ 指标重构为<strong>「健康度 + 异常归因 + 动作建议」三段式</strong>。把数据产品从「展示」变成「工作流入口」。<em>我所有产品方法论的起点。</em>
+      </div>
+      <div class="wc-metric">
+        <div class="wc-metric-num"><span class="accent">31% → 68%</span></div>
+        <div class="wc-metric-label">行长日活率</div>
+        <div class="wc-cta">案例 ↗</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- METHODOLOGY LINEAGE -->
+  <section class="lineage-section">
+    <div class="lineage-inner">
+      <div class="lineage-meta">
+        <span>方法论谱系 · METHODOLOGY LINEAGE</span>
+        <span class="ticker">● 一条线 · 4 个方法论</span>
+        <span>2022 — 2025</span>
+      </div>
+      <h2>这 4 个项目<br>本质是<span class="red">一条方法论的</span>演化<span class="red">.</span></h2>
+      <p class="dek">每一个项目都从上一个的"差什么"开始。看板的三段（数据 → 动作）→ 推荐的三层（数据 → 决策）→ RAG 的四域（决策 → 知识）→ Agent 的三档+四职能（决策 → 动作）。</p>
+
+      <div class="lineage-row">
+        <div class="lineage-cell">
+          <div class="lineage-year">2022</div>
+          <div class="lineage-method"><span class="red">三段式</span></div>
+          <div class="lineage-tagline">健康度 / 归因 / 动作 — 数据 → 动作</div>
+          <div class="lineage-arrow">→</div>
+        </div>
+        <div class="lineage-cell">
+          <div class="lineage-year">2023</div>
+          <div class="lineage-method"><span class="red">三层模型</span></div>
+          <div class="lineage-tagline">分层 / 匹配 / 时机 — 决策 + 可解释</div>
+          <div class="lineage-arrow">→</div>
+        </div>
+        <div class="lineage-cell">
+          <div class="lineage-year">2024</div>
+          <div class="lineage-method"><span class="red">四域结构</span></div>
+          <div class="lineage-tagline">产品 / 话术 / 流程 / 合规 — 决策带知识</div>
+          <div class="lineage-arrow">→</div>
+        </div>
+        <div class="lineage-cell">
+          <div class="lineage-year">2025</div>
+          <div class="lineage-method"><span class="red">三档 + 四职能</span></div>
+          <div class="lineage-tagline">读 / 匹 / 动 / 傅 + 自动 / 确认 / 接管</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="marquee-inner">
+      WORK · 作品索引 · 4 个项目 · 2022 → 2025 · 1000+ 网点 · 三段式 → 三层 → 四域 → Agent · hi@shiizone.com · WORK ·
+    </div>
+  </div>
+
+  <!-- THEME TOGGLE + FILTER -->
+  <script>
+    // Theme toggle
+    (function() {
+      const KEY = 'wang-theme';
+      const html = document.documentElement;
+      const buttons = document.querySelectorAll('.theme-chip button');
+      function apply(pref) {
+        if (pref === 'system') html.removeAttribute('data-theme');
+        else html.setAttribute('data-theme', pref);
+        buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.theme === pref ? 'true' : 'false'));
+        try { localStorage.setItem(KEY, pref); } catch (e) {}
+      }
+      const saved = (function(){ try { return localStorage.getItem(KEY); } catch(e) { return null; } })() || 'system';
+      apply(saved);
+      buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.theme)));
+    })();
+
+    // Filter buttons
+    (function() {
+      const btns = document.querySelectorAll('.filter-btn');
+      const cards = document.querySelectorAll('.work-card');
+      const countEl = document.querySelector('.filter-count .num');
+      function applyFilter(cat) {
+        let shown = 0;
+        cards.forEach(c => {
+          const match = (cat === 'all' || c.dataset.cat === cat);
+          c.classList.toggle('hidden', !match);
+          if (match) shown++;
+        });
+        countEl.textContent = shown;
+        btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.filter === cat ? 'true' : 'false'));
+      }
+      btns.forEach(b => b.addEventListener('click', () => applyFilter(b.dataset.filter)));
+    })();
+  </script>
+</body>
+</html>
