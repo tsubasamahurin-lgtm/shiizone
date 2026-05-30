@@ -1,0 +1,273 @@
+app:
+  description: 客服机器人 —— 自动区分售前/售后问题，支持文字、图片、语音输入
+  icon: "\U0001F916"
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 客服机器人（售前/售后分流）
+kind: app
+version: 0.1.5
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      image:
+        enabled: true
+        number_limits: 3
+        transfer_methods:
+          - local_file
+          - remote_url
+    opening_statement: 您好，我是智能客服。请问有什么可以帮您？您可以直接发送文字、图片或语音。
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: true
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: true
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+      - id: start-classifier
+        source: start
+        sourceHandle: source
+        target: classifier
+        targetHandle: target
+        type: custom
+      - id: classifier-presale-kb
+        source: classifier
+        sourceHandle: '1'
+        target: presale_kb
+        targetHandle: target
+        type: custom
+      - id: classifier-postsale-kb
+        source: classifier
+        sourceHandle: '2'
+        target: postsale_kb
+        targetHandle: target
+        type: custom
+      - id: classifier-other-llm
+        source: classifier
+        sourceHandle: '3'
+        target: other_llm
+        targetHandle: target
+        type: custom
+      - id: presale-kb-llm
+        source: presale_kb
+        sourceHandle: source
+        target: presale_llm
+        targetHandle: target
+        type: custom
+      - id: postsale-kb-llm
+        source: postsale_kb
+        sourceHandle: source
+        target: postsale_llm
+        targetHandle: target
+        type: custom
+      - id: presale-llm-answer
+        source: presale_llm
+        sourceHandle: source
+        target: presale_answer
+        targetHandle: target
+        type: custom
+      - id: postsale-llm-answer
+        source: postsale_llm
+        sourceHandle: source
+        target: postsale_answer
+        targetHandle: target
+        type: custom
+      - id: other-llm-answer
+        source: other_llm
+        sourceHandle: source
+        target: other_answer
+        targetHandle: target
+        type: custom
+    nodes:
+      - id: start
+        type: custom
+        position: {x: 30, y: 300}
+        data:
+          type: start
+          title: 开始
+          variables: []
+
+      - id: classifier
+        type: custom
+        position: {x: 330, y: 300}
+        data:
+          type: question-classifier
+          title: 问题分类（售前 / 售后 / 其他）
+          model:
+            provider: openai
+            name: gpt-4o-mini
+            mode: chat
+            completion_params:
+              temperature: 0
+          query_variable_selector: [sys, query]
+          classes:
+            - id: '1'
+              name: 售前咨询（产品介绍、规格参数、价格、库存、对比、购买流程、优惠活动）
+            - id: '2'
+              name: 售后咨询（订单状态、物流、发票、退款、退换货、产品故障、维修、投诉）
+            - id: '3'
+              name: 其他（闲聊、无法判断意图、与本品牌业务无关）
+          instructions: |
+            根据用户问题（可能附带图片）判断归属类别。
+            - 用户发送商品图想了解功能 → 售前
+            - 用户发送损坏/错误截图 → 售后
+            - 仅打招呼或闲聊 → 其他
+
+      - id: presale_kb
+        type: custom
+        position: {x: 660, y: 80}
+        data:
+          type: knowledge-retrieval
+          title: 售前知识库检索
+          query_variable_selector: [sys, query]
+          dataset_ids:
+            - REPLACE_WITH_PRESALE_DATASET_ID
+          retrieval_mode: multiple
+          multiple_retrieval_config:
+            top_k: 4
+            score_threshold: 0.5
+            reranking_mode: weighted_score
+
+      - id: postsale_kb
+        type: custom
+        position: {x: 660, y: 300}
+        data:
+          type: knowledge-retrieval
+          title: 售后知识库检索
+          query_variable_selector: [sys, query]
+          dataset_ids:
+            - REPLACE_WITH_POSTSALE_DATASET_ID
+          retrieval_mode: multiple
+          multiple_retrieval_config:
+            top_k: 4
+            score_threshold: 0.5
+            reranking_mode: weighted_score
+
+      - id: presale_llm
+        type: custom
+        position: {x: 990, y: 80}
+        data:
+          type: llm
+          title: 售前回答（带视觉）
+          model:
+            provider: openai
+            name: gpt-4o
+            mode: chat
+            completion_params:
+              temperature: 0.3
+          prompt_template:
+            - role: system
+              text: |
+                你是专业、热情的售前客服。请遵守：
+                1. 基于【参考资料】回答；资料里没有的内容，明确告知用户并建议联系人工。
+                2. 若用户发送图片（产品截图、配置图、对比图），结合图片信息理解需求。
+                3. 涉及价格、库存、活动时间等易变信息，提示"以下单页面实际显示为准"。
+                4. 回答简洁、有结构（必要时用要点），最后给一个引导购买/咨询的下一步建议。
+
+                【参考资料】
+                {{#context#}}
+            - role: user
+              text: '{{#sys.query#}}'
+          context:
+            enabled: true
+            variable_selector: [presale_kb, result]
+          vision:
+            enabled: true
+            configs:
+              detail: high
+            variable_selector: [sys, files]
+
+      - id: postsale_llm
+        type: custom
+        position: {x: 990, y: 300}
+        data:
+          type: llm
+          title: 售后回答（带视觉）
+          model:
+            provider: openai
+            name: gpt-4o
+            mode: chat
+            completion_params:
+              temperature: 0.3
+          prompt_template:
+            - role: system
+              text: |
+                你是耐心、共情的售后客服。请遵守：
+                1. 优先安抚用户情绪，再处理问题。
+                2. 基于【参考资料】给出操作步骤；按 1/2/3 列出。
+                3. 若用户发送图片（损坏照片、错误提示、订单截图、物流截图），先描述你看到了什么，再据此判断问题。
+                4. 凡涉及订单号、手机号等隐私信息，提示用户在安全渠道提供。
+                5. 资料无法覆盖或需人工介入（退款审核、上门维修等）→ 引导用户提交工单或转人工。
+
+                【参考资料】
+                {{#context#}}
+            - role: user
+              text: '{{#sys.query#}}'
+          context:
+            enabled: true
+            variable_selector: [postsale_kb, result]
+          vision:
+            enabled: true
+            configs:
+              detail: high
+            variable_selector: [sys, files]
+
+      - id: other_llm
+        type: custom
+        position: {x: 990, y: 520}
+        data:
+          type: llm
+          title: 通用回答
+          model:
+            provider: openai
+            name: gpt-4o-mini
+            mode: chat
+            completion_params:
+              temperature: 0.5
+          prompt_template:
+            - role: system
+              text: |
+                你是友好的客服助手。
+                - 若用户只是打招呼或闲聊，做简短礼貌回应，并主动询问"想咨询售前还是售后问题？"
+                - 若识别出隐含意图（例如"我买的东西坏了"），引导用户具体描述产品和情况。
+                - 不要编造产品信息。
+            - role: user
+              text: '{{#sys.query#}}'
+          vision:
+            enabled: true
+            configs:
+              detail: high
+            variable_selector: [sys, files]
+
+      - id: presale_answer
+        type: custom
+        position: {x: 1320, y: 80}
+        data:
+          type: answer
+          title: 输出（售前）
+          answer: '{{#presale_llm.text#}}'
+
+      - id: postsale_answer
+        type: custom
+        position: {x: 1320, y: 300}
+        data:
+          type: answer
+          title: 输出（售后）
+          answer: '{{#postsale_llm.text#}}'
+
+      - id: other_answer
+        type: custom
+        position: {x: 1320, y: 520}
+        data:
+          type: answer
+          title: 输出（其他）
+          answer: '{{#other_llm.text#}}'
