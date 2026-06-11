@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>智能助理 · 任务卡详情 · 王女士流失挽留</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { 50:'#EFF6FF',100:'#DBEAFE',500:'#2563EB',600:'#1D4ED8',700:'#1E40AF' },
+          ai:    { 50:'#F5F3FF',100:'#EDE9FE',500:'#7C3AED',600:'#6D28D9' },
+          ink:   { 100:'#F1F5F9',300:'#CBD5E1',500:'#64748B',700:'#334155',900:'#0F172A' },
+          ok:'#16A34A', warn:'#F59E0B', danger:'#DC2626', info:'#0EA5E9',
+        },
+        fontFamily: {
+          sans: ['Inter','Noto Sans SC','system-ui','sans-serif'],
+          mono: ['JetBrains Mono','monospace'],
+        },
+        boxShadow: {
+          card: '0 1px 3px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.04)',
+          pop:  '0 20px 50px rgba(15,23,42,.18)',
+        },
+        borderRadius: { lg:'14px' },
+      }
+    }
+  }
+</script>
+<style>
+  html, body { font-family: 'Inter','Noto Sans SC',system-ui,sans-serif; background:#F8FAFC; color:#0F172A; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+  /* Stepper rail */
+  .rail::before {
+    content:''; position:absolute; left:13px; top:28px; bottom:8px;
+    width:2px; background:linear-gradient(#CBD5E1 0 50%, #E2E8F0 50% 100%);
+  }
+  details[open] > summary .chev { transform: rotate(90deg); }
+  .chev { transition: transform .15s ease; }
+  .fade-in { animation: fade .25s ease both; }
+  @keyframes fade { from{opacity:0; transform:translateY(4px);} to{opacity:1;transform:none;} }
+  .scale-in { animation: scale .18s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes scale { from{opacity:0; transform:scale(.96);} to{opacity:1;transform:scale(1);} }
+  .ring-focus:focus { outline:none; box-shadow:0 0 0 3px rgba(37,99,235,.25); }
+</style>
+</head>
+<body class="text-ink-900">
+
+<!-- ─────────── Top Nav ─────────── -->
+<nav class="h-14 bg-white border-b border-ink-100 sticky top-0 z-40">
+  <div class="max-w-[1440px] mx-auto h-full px-8 flex items-center justify-between">
+    <div class="flex items-center gap-8">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-md bg-gradient-to-br from-brand-500 to-ai-500 grid place-items-center">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <span class="font-semibold text-[15px]">智能助理</span>
+        <span class="mono text-[10px] text-ink-500 ml-1 px-1.5 py-0.5 bg-ink-100 rounded">v2.1</span>
+      </div>
+      <div class="flex items-center gap-1 text-[13px]">
+        <a class="px-3 py-1.5 rounded-md bg-ink-100 text-ink-900 font-medium">任务台</a>
+        <a class="px-3 py-1.5 rounded-md text-ink-500 hover:bg-ink-100">客户</a>
+        <a class="px-3 py-1.5 rounded-md text-ink-500 hover:bg-ink-100">知识</a>
+        <a class="px-3 py-1.5 rounded-md text-ink-500 hover:bg-ink-100">评测</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <input class="w-72 h-8 pl-8 pr-3 text-[13px] bg-ink-100 rounded-md ring-focus" placeholder="搜索客户、任务、知识…" />
+        <svg viewBox="0 0 24 24" class="w-4 h-4 absolute left-2.5 top-2 text-ink-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </div>
+      <button class="relative w-8 h-8 grid place-items-center text-ink-700 hover:bg-ink-100 rounded-md">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-danger rounded-full"></span>
+      </button>
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-ai-500 grid place-items-center text-white text-[11px] font-medium">张</div>
+        <div class="text-[12px] leading-tight">
+          <div class="font-medium">张明</div>
+          <div class="text-ink-500 text-[11px]">深圳南山支行</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─────────── Page ─────────── -->
+<main class="max-w-[1440px] mx-auto px-8 py-6">
+
+  <!-- Breadcrumb + Title -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2 text-[12px] text-ink-500">
+      <a class="hover:text-brand-600 cursor-pointer">任务台</a>
+      <span>/</span>
+      <span class="text-ink-700">任务卡详情</span>
+      <span class="mono ml-2 px-1.5 py-0.5 bg-ink-100 rounded text-[11px]">TASK-2026-06-11-0473</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="h-8 px-3 text-[13px] text-ink-700 border border-ink-300 rounded-md hover:bg-ink-100">复制链接</button>
+      <button class="h-8 px-3 text-[13px] text-ink-700 border border-ink-300 rounded-md hover:bg-ink-100">转交他人</button>
+    </div>
+  </div>
+
+  <!-- Title row -->
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-danger/10 text-danger rounded-md text-[12px] font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-danger"></span>流失预警
+        </span>
+        <span class="px-2 py-0.5 bg-warn/10 text-warn rounded-md text-[12px] font-medium">⚡ 紧急</span>
+        <span class="px-2 py-0.5 bg-ink-100 text-ink-700 rounded-md text-[12px]">VIP3</span>
+        <span class="px-2 py-0.5 bg-ink-100 text-ink-700 rounded-md text-[12px] mono">截止 12:30</span>
+      </div>
+      <h1 class="text-[24px] font-semibold leading-8">客户 王女士 的流失挽留任务</h1>
+      <p class="text-[13px] text-ink-500 mt-1">由 Agent 于 09:12 生成 · 基于昨日行为数据与产品到期日</p>
+    </div>
+  </div>
+
+  <!-- 2-column layout -->
+  <div class="grid grid-cols-[1fr_432px] gap-6">
+
+    <!-- ─── Left: Main ─── -->
+    <section>
+
+      <!-- Tabs -->
+      <div class="flex items-center gap-1 border-b border-ink-100 mb-5">
+        <button data-tab="chain" class="tab tab-active relative px-4 py-2.5 text-[13px] font-medium">Agent 决策链</button>
+        <button data-tab="profile" class="tab px-4 py-2.5 text-[13px] text-ink-500 hover:text-ink-900">客户画像</button>
+        <button data-tab="history" class="tab px-4 py-2.5 text-[13px] text-ink-500 hover:text-ink-900">历史触达</button>
+      </div>
+
+      <!-- Tab: Chain -->
+      <div data-pane="chain" class="space-y-4">
+
+        <!-- Stepper -->
+        <div class="bg-white rounded-lg shadow-card p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-[16px] font-semibold flex items-center gap-2">
+              <svg viewBox="0 0 24 24" class="w-4 h-4 text-ai-500" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><rect x="9" y="15" width="6" height="6" rx="1.5"/><path d="M6 9v3h12V9M12 12v3"/></svg>
+              五段决策链路
+            </h2>
+            <div class="flex items-center gap-3 text-[12px] text-ink-500">
+              <span>端到端 <span class="mono text-ink-900 font-medium">980ms</span></span>
+              <span>·</span>
+              <span>工具调用 <span class="mono text-ok font-medium">6/6 成功</span></span>
+            </div>
+          </div>
+
+          <ol class="relative rail pl-10 space-y-4">
+
+            <!-- Step 1 -->
+            <li class="relative">
+              <span class="absolute -left-10 top-0 w-7 h-7 rounded-full bg-ok grid place-items-center text-white">
+                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              <details open class="group">
+                <summary class="list-none cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div class="text-[14px] font-semibold">① 意图理解</div>
+                    <div class="text-[13px] text-ink-500 mt-0.5">从昨日 VIP3 客户行为 + 产品到期表识别挽留场景</div>
+                  </div>
+                  <svg class="chev w-4 h-4 text-ink-500 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </summary>
+                <div class="mt-3 p-3 bg-ai-50 rounded-md text-[13px] text-ink-700">
+                  <span class="mono text-ai-600">intent</span>：<b>VIP3 客户挽留</b>
+                  <span class="text-ink-500 mx-1">·</span>
+                  <span class="mono text-ai-600">trigger</span>：理财产品到期 +
+                  <span class="mono text-ai-600">churn_score</span> &gt; 0.7
+                </div>
+              </details>
+            </li>
+
+            <!-- Step 2 -->
+            <li class="relative">
+              <span class="absolute -left-10 top-0 w-7 h-7 rounded-full bg-ok grid place-items-center text-white">
+                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              <details class="group">
+                <summary class="list-none cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div class="text-[14px] font-semibold">② 工具编排 <span class="text-ink-500 font-normal">· 6 个工具</span></div>
+                    <div class="text-[13px] text-ink-500 mt-0.5">按依赖顺序并行调用，全部通过 Schema 校验</div>
+                  </div>
+                  <svg class="chev w-4 h-4 text-ink-500 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </summary>
+                <div class="mt-3 border border-ink-100 rounded-md overflow-hidden">
+                  <table class="w-full text-[13px]">
+                    <thead class="bg-ink-100 text-ink-500 text-[11px] uppercase tracking-wide">
+                      <tr><th class="text-left px-3 py-2 font-medium">工具</th><th class="text-left px-3 py-2 font-medium">耗时</th><th class="text-left px-3 py-2 font-medium">状态</th><th class="text-left px-3 py-2 font-medium">输出摘要</th></tr>
+                    </thead>
+                    <tbody class="divide-y divide-ink-100">
+                      <tr><td class="px-3 py-2 mono">getCustomerAsset()</td><td class="px-3 py-2 mono text-ink-500">200ms</td><td class="px-3 py-2"><span class="text-ok">✓</span></td><td class="px-3 py-2 text-ink-700">AUM 386.4 万 · 环比 -2.1%</td></tr>
+                      <tr><td class="px-3 py-2 mono">predictChurn()</td><td class="px-3 py-2 mono text-ink-500">340ms</td><td class="px-3 py-2"><span class="text-ok">✓</span></td><td class="px-3 py-2 text-ink-700">churn=0.78 · 主因：登录中断+到期未续</td></tr>
+                      <tr><td class="px-3 py-2 mono">matchProduct()</td><td class="px-3 py-2 mono text-ink-500">180ms</td><td class="px-3 py-2"><span class="text-ok">✓</span></td><td class="px-3 py-2 text-ink-700">Top-1 稳健90天 · 匹配度 0.91</td></tr>
+                      <tr><td class="px-3 py-2 mono">checkCompliance()</td><td class="px-3 py-2 mono text-ink-500">110ms</td><td class="px-3 py-2"><span class="text-ok">✓</span></td><td class="px-3 py-2 text-ink-700">适当性 R2~R3 · 双录就绪</td></tr>
+                      <tr><td class="px-3 py-2 mono">getContactCooldown()</td><td class="px-3 py-2 mono text-ink-500">90ms</td><td class="px-3 py-2"><span class="text-ok">✓</span></td><td class="px-3 py-2 text-ink-700">上次触达 14 天前 · 可触达</td></tr>
+                      <tr><td class="px-3 py-2 mono">rankPriority()</td><td class="px-3 py-2 mono text-ink-500">60ms</td><td class="px-3 py-2"><span class="text-ok">✓</span></td><td class="px-3 py-2 text-ink-700">今日 P1（截止 12:30）</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </li>
+
+            <!-- Step 3 -->
+            <li class="relative">
+              <span class="absolute -left-10 top-0 w-7 h-7 rounded-full bg-ok grid place-items-center text-white">
+                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              <details class="group">
+                <summary class="list-none cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div class="text-[14px] font-semibold">③ 任务规划 <span class="text-ink-500 font-normal">· 3 个动作</span></div>
+                    <div class="text-[13px] text-ink-500 mt-0.5">含 1 个需人工确认动作，1 个延时动作</div>
+                  </div>
+                  <svg class="chev w-4 h-4 text-ink-500 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </summary>
+                <ul class="mt-3 space-y-2">
+                  <li class="flex items-start gap-3 p-3 border border-ink-100 rounded-md">
+                    <span class="mono text-[11px] mt-0.5 px-1.5 py-0.5 bg-ok/10 text-ok rounded">自动</span>
+                    <div class="flex-1">
+                      <div class="text-[13px] font-medium">1. 电话回访（话术已生成）</div>
+                      <div class="text-[12px] text-ink-500 mt-0.5">建议时段 10:30–11:30 · 渠道偏好 微信</div>
+                    </div>
+                  </li>
+                  <li class="flex items-start gap-3 p-3 border border-warn/30 bg-warn/5 rounded-md">
+                    <span class="mono text-[11px] mt-0.5 px-1.5 py-0.5 bg-warn/15 text-warn rounded">需确认</span>
+                    <div class="flex-1">
+                      <div class="text-[13px] font-medium">2. 推荐稳健90天 · 年化 4.2%</div>
+                      <div class="text-[12px] text-ink-500 mt-0.5">风险 R3 · 涉及合规适当性，需人工二审</div>
+                    </div>
+                  </li>
+                  <li class="flex items-start gap-3 p-3 border border-ink-100 rounded-md">
+                    <span class="mono text-[11px] mt-0.5 px-1.5 py-0.5 bg-info/10 text-info rounded">延时</span>
+                    <div class="flex-1">
+                      <div class="text-[13px] font-medium">3. 短信跟进</div>
+                      <div class="text-[12px] text-ink-500 mt-0.5">客户 24h 内未回应自动触发</div>
+                    </div>
+                  </li>
+                </ul>
+              </details>
+            </li>
+
+            <!-- Step 4 -->
+            <li class="relative">
+              <span class="absolute -left-10 top-0 w-7 h-7 rounded-full bg-brand-500 grid place-items-center text-white ring-4 ring-brand-100">
+                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+              </span>
+              <div>
+                <div class="text-[14px] font-semibold text-brand-700">④ 任务卡交付 <span class="text-ink-500 font-normal text-[12px]">当前</span></div>
+                <div class="text-[13px] text-ink-500 mt-0.5">等待客户经理采纳 / 接管 / 反馈</div>
+              </div>
+            </li>
+
+            <!-- Step 5 -->
+            <li class="relative">
+              <span class="absolute -left-10 top-0 w-7 h-7 rounded-full bg-white border-2 border-ink-300"></span>
+              <div>
+                <div class="text-[14px] font-semibold text-ink-500">⑤ 行为回流</div>
+                <div class="text-[13px] text-ink-500 mt-0.5">采纳率 / 接管原因 / 客户回应 将回流评测样本库</div>
+              </div>
+            </li>
+
+          </ol>
+        </div>
+
+        <!-- Compliance banner -->
+        <div class="flex items-start gap-3 p-4 bg-warn/8 border border-warn/30 rounded-lg">
+          <svg viewBox="0 0 24 24" class="w-5 h-5 text-warn flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div class="flex-1">
+            <div class="text-[13px] font-medium text-ink-900">人工确认：推荐稳健90天涉及风险等级 R3</div>
+            <div class="text-[12px] text-ink-700 mt-0.5">客户风险评估 R2（稳健型），产品 R3（中风险），适当性匹配上限。需在通话中向客户重述风险并确认知悉。</div>
+          </div>
+        </div>
+
+        <!-- Talk script -->
+        <div class="bg-white rounded-lg shadow-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-[14px] font-semibold flex items-center gap-2">
+              <svg viewBox="0 0 24 24" class="w-4 h-4 text-ai-500" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3"/></svg>
+              AI 生成话术
+              <span class="mono text-[10px] px-1.5 py-0.5 bg-ai-50 text-ai-600 rounded">v3 · 已通过合规校验</span>
+            </h3>
+            <button onclick="copyScript()" class="text-[12px] text-brand-600 hover:underline">复制话术</button>
+          </div>
+          <p class="text-[14px] leading-7 text-ink-700" id="script">
+            "王姐您好，我是平安银行的张明。看到您持有的<b>稳健60天</b>本周三就到期了，最近也注意到您有几天没登录我们的 APP。我们针对像您这样的<b>稳健型客户</b>新上了一款<b>稳健90天</b>，年化 4.2%（比您之前那款高 0.3pct），起投门槛和持有体验都一致。<b>风险等级 R3，比您当前评估高一级</b>，需要您在通话中确认一下风险知悉。方便我先给您发份产品要素吗？"
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Tab: Profile (hidden) -->
+      <div data-pane="profile" class="hidden">
+        <div class="bg-white rounded-lg shadow-card p-6 text-[13px] text-ink-500">客户画像内容（演示版省略）</div>
+      </div>
+      <div data-pane="history" class="hidden">
+        <div class="bg-white rounded-lg shadow-card p-6 text-[13px] text-ink-500">历史触达内容（演示版省略）</div>
+      </div>
+
+      <!-- Footer actions -->
+      <div class="sticky bottom-0 mt-6 -mx-8 px-8 py-4 bg-white border-t border-ink-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <button onclick="openFeedback()" class="h-9 px-3 text-[13px] text-ink-700 hover:bg-ink-100 rounded-md inline-flex items-center gap-1.5">
+            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 6 0v-4M2 9h20"/><path d="M3 9 4.5 5.5C4.8 4.6 5.7 4 6.6 4h10.8c.9 0 1.8.6 2.1 1.5L21 9"/></svg>
+            反馈不准
+          </button>
+          <button onclick="openModal('takeover')" class="h-9 px-3 text-[13px] text-danger hover:bg-danger/8 rounded-md inline-flex items-center gap-1.5">
+            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+            我来接管
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="h-9 px-4 text-[13px] text-ink-700 border border-ink-300 rounded-md hover:bg-ink-100">稍后</button>
+          <button onclick="openModal('confirm')" class="h-9 px-5 text-[13px] font-medium text-white bg-brand-500 hover:bg-brand-600 rounded-md inline-flex items-center gap-1.5 shadow-sm">
+            ✓ 采纳并执行
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Right: Customer panel ─── -->
+    <aside class="space-y-4">
+      <div class="bg-white rounded-lg shadow-card p-5">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 grid place-items-center text-white font-medium">王</div>
+          <div class="flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[15px] font-semibold">王女士</span>
+              <span class="px-1.5 py-0.5 bg-warn/10 text-warn rounded text-[10px] font-medium">VIP3</span>
+            </div>
+            <div class="text-[12px] text-ink-500 mt-0.5">客户号 6228-****-1042</div>
+          </div>
+          <button class="text-ink-500 hover:text-ink-900">
+            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </button>
+        </div>
+
+        <div class="space-y-3 pb-4 border-b border-ink-100">
+          <div class="flex items-end justify-between">
+            <span class="text-[12px] text-ink-500">总资产 AUM</span>
+            <span class="mono text-[18px] font-semibold">386.4<span class="text-[12px] text-ink-500 ml-0.5">万</span></span>
+          </div>
+          <div class="flex items-center justify-between text-[12px]">
+            <span class="text-ink-500">环比</span>
+            <span class="text-danger mono">-2.1%</span>
+          </div>
+          <div class="flex items-center justify-between text-[12px]">
+            <span class="text-ink-500">churn 概率</span>
+            <span class="mono font-medium text-danger">0.78</span>
+          </div>
+        </div>
+
+        <div class="py-4 border-b border-ink-100">
+          <div class="text-[12px] text-ink-500 mb-2">持仓结构</div>
+          <div class="h-2 rounded-full overflow-hidden flex">
+            <div class="bg-brand-500" style="width:62%"></div>
+            <div class="bg-ai-500" style="width:18%"></div>
+            <div class="bg-info" style="width:20%"></div>
+          </div>
+          <div class="grid grid-cols-3 mt-2 text-[11px]">
+            <div><span class="inline-block w-2 h-2 rounded-sm bg-brand-500 mr-1"></span>理财 62%</div>
+            <div><span class="inline-block w-2 h-2 rounded-sm bg-ai-500 mr-1"></span>基金 18%</div>
+            <div><span class="inline-block w-2 h-2 rounded-sm bg-info mr-1"></span>存款 20%</div>
+          </div>
+        </div>
+
+        <div class="py-4 border-b border-ink-100 grid grid-cols-2 gap-3 text-[12px]">
+          <div><div class="text-ink-500">风险偏好</div><div class="font-medium mt-0.5">R2 稳健</div></div>
+          <div><div class="text-ink-500">渠道偏好</div><div class="font-medium mt-0.5">微信</div></div>
+          <div><div class="text-ink-500">上次触达</div><div class="font-medium mt-0.5">14 天前</div></div>
+          <div><div class="text-ink-500">本月登录</div><div class="font-medium mt-0.5 text-danger">0 次</div></div>
+        </div>
+
+        <div class="pt-4">
+          <div class="text-[12px] text-ink-500 mb-2">近 90 天 AUM 趋势</div>
+          <svg viewBox="0 0 320 60" class="w-full h-14">
+            <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2563EB" stop-opacity="0.25"/><stop offset="1" stop-color="#2563EB" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 20 L40 18 L80 22 L120 15 L160 20 L200 28 L240 35 L280 42 L320 48 L320 60 L0 60 Z" fill="url(#g)"/>
+            <path d="M0 20 L40 18 L80 22 L120 15 L160 20 L200 28 L240 35 L280 42 L320 48" fill="none" stroke="#2563EB" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Similar tasks -->
+      <div class="bg-white rounded-lg shadow-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-[13px] font-semibold">相似客户任务</h3>
+          <span class="mono text-[11px] text-ink-500">3 张</span>
+        </div>
+        <ul class="space-y-2 text-[13px]">
+          <li class="flex items-center justify-between hover:bg-ink-100 -mx-2 px-2 py-1.5 rounded cursor-pointer">
+            <span>李先生 · VIP3</span><span class="text-[11px] text-ink-500">churn 0.71</span>
+          </li>
+          <li class="flex items-center justify-between hover:bg-ink-100 -mx-2 px-2 py-1.5 rounded cursor-pointer">
+            <span>陈女士 · VIP2</span><span class="text-[11px] text-ink-500">churn 0.69</span>
+          </li>
+          <li class="flex items-center justify-between hover:bg-ink-100 -mx-2 px-2 py-1.5 rounded cursor-pointer">
+            <span>赵先生 · VIP3</span><span class="text-[11px] text-ink-500">churn 0.66</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- ─────────── Confirm Modal ─────────── -->
+<div id="modalConfirm" class="hidden fixed inset-0 z-50 bg-ink-900/40 grid place-items-center">
+  <div class="bg-white rounded-lg shadow-pop w-[480px] p-6 scale-in">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="px-2 py-0.5 bg-warn/15 text-warn rounded text-[12px] font-medium">⚠ 需确认</span>
+      <span class="mono text-[11px] text-ink-500">三档分级 · 第 2 档</span>
+    </div>
+    <h3 class="text-[18px] font-semibold mt-2">推荐稳健90天 · 风险 R3</h3>
+    <p class="text-[13px] text-ink-500 mt-1">动作风险高于客户评估等级，需人工二审后执行</p>
+
+    <div class="mt-4 p-4 bg-ink-100/60 rounded-md text-[13px] space-y-2">
+      <div class="flex items-center gap-2"><span class="text-ok">✓</span>适当性匹配（R2 客户 → R3 产品 · 边界允许）</div>
+      <div class="flex items-center gap-2"><span class="text-ok">✓</span>双录就绪 · 通话录音将自动归档</div>
+      <div class="flex items-center gap-2"><span class="text-ok">✓</span>合规话术校验已通过</div>
+      <div class="flex items-center gap-2"><span class="text-warn">!</span>需向客户重述风险并确认知悉</div>
+    </div>
+
+    <div class="mt-5 flex items-center justify-end gap-2">
+      <button onclick="closeModal()" class="h-9 px-4 text-[13px] text-ink-700 border border-ink-300 rounded-md hover:bg-ink-100">稍后处理</button>
+      <button onclick="afterConfirm()" class="h-9 px-5 text-[13px] font-medium text-white bg-brand-500 hover:bg-brand-600 rounded-md">确认执行</button>
+    </div>
+  </div>
+</div>
+
+<!-- Takeover Modal -->
+<div id="modalTakeover" class="hidden fixed inset-0 z-50 bg-ink-900/40 grid place-items-center">
+  <div class="bg-white rounded-lg shadow-pop w-[480px] p-6 scale-in">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="px-2 py-0.5 bg-danger/10 text-danger rounded text-[12px] font-medium">⛔ 人工接管</span>
+      <span class="mono text-[11px] text-ink-500">三档分级 · 第 3 档</span>
+    </div>
+    <h3 class="text-[18px] font-semibold mt-2">接管后 Agent 不再生成动作</h3>
+    <p class="text-[13px] text-ink-500 mt-1">该客户后续触达全部由你掌控，请填写接管原因</p>
+
+    <div class="mt-4 space-y-2 text-[13px]">
+      <label class="flex items-center gap-2 p-2 border border-ink-300 rounded-md cursor-pointer hover:bg-ink-100"><input type="radio" name="r"> 客户已表达投诉意向</label>
+      <label class="flex items-center gap-2 p-2 border border-ink-300 rounded-md cursor-pointer hover:bg-ink-100"><input type="radio" name="r"> 客户为长期 VIP，需个性化沟通</label>
+      <label class="flex items-center gap-2 p-2 border border-ink-300 rounded-md cursor-pointer hover:bg-ink-100"><input type="radio" name="r"> AI 推荐方向不匹配</label>
+      <label class="flex items-center gap-2 p-2 border border-ink-300 rounded-md cursor-pointer hover:bg-ink-100"><input type="radio" name="r"> 其他（填写）</label>
+    </div>
+
+    <div class="mt-5 flex items-center justify-end gap-2">
+      <button onclick="closeModal()" class="h-9 px-4 text-[13px] text-ink-700 border border-ink-300 rounded-md hover:bg-ink-100">取消</button>
+      <button onclick="afterTakeover()" class="h-9 px-5 text-[13px] font-medium text-white bg-danger hover:bg-red-700 rounded-md">确认接管</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-ink-900 text-white text-[13px] rounded-md shadow-pop">已采纳 · 行为已回流</div>
+
+<style>
+  .tab { color:#64748B; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tab-active { color:#0F172A; border-bottom-color:#2563EB; }
+</style>
+
+<script>
+  // Tabs
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('tab-active'));
+      btn.classList.add('tab-active');
+      const name = btn.dataset.tab;
+      document.querySelectorAll('[data-pane]').forEach(p => {
+        p.classList.toggle('hidden', p.dataset.pane !== name);
+      });
+    });
+  });
+  // Modal
+  function openModal(kind){
+    const id = kind === 'confirm' ? 'modalConfirm' : 'modalTakeover';
+    document.getElementById(id).classList.remove('hidden');
+  }
+  function closeModal(){
+    ['modalConfirm','modalTakeover'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  }
+  function afterConfirm(){
+    closeModal();
+    showToast('已采纳 · 行为已回流');
+  }
+  function afterTakeover(){
+    closeModal();
+    showToast('已接管 · Agent 已停止生成');
+  }
+  function openFeedback(){ showToast('反馈已记录 · 将进入下轮评测样本'); }
+  function copyScript(){
+    const text = document.getElementById('script').innerText;
+    navigator.clipboard.writeText(text).then(()=> showToast('话术已复制到剪贴板'));
+  }
+  function showToast(msg){
+    const t = document.getElementById('toast'); t.textContent = msg;
+    t.classList.remove('hidden'); t.classList.add('fade-in');
+    setTimeout(()=> t.classList.add('hidden'), 1800);
+  }
+</script>
+</body>
+</html>
